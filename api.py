@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, flash, redirect, url_for
 from werkzeug.utils import secure_filename
-from flask_ngrok import run_with_ngrok
+#from flask_ngrok import run_with_ngrok
 import urllib.parse
 import requests
 import pymongo
@@ -15,9 +15,9 @@ from google.cloud import translate
 import pandas as pd
 from passlib.hash import pbkdf2_sha256
 
-credential_path = "C:\\Users\\shabu\Desktop\\fluttertest\\foodapi-68021c8d36da.json"
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
-project_id="future-name-268108"
+#credential_path = "C:\\Users\\shabu\Desktop\\fluttertest\\foodapi-68021c8d36da.json"
+#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
+#project_id="future-name-268108"
 
 get_nutrition_link = "https://api.edamam.com/api/nutrition-details?app_id=20334a52&app_key=19c996cb1f61d2d9f2a71efbbc87c97d"
 
@@ -39,7 +39,7 @@ ALLOWED_EXTENSIONS = {'xlsx'}
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-run_with_ngrok(app)
+#run_with_ngrok(app)
 length = 32
 ing = []
 calories = []
