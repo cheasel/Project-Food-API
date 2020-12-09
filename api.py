@@ -709,6 +709,6 @@ def add_receipe():
         get_nutrition(trans, serve)
         return insert_receipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterols, fats, proteins, user)
 
-if __name__ == '__main__':
-    app.run()  
+#if __name__ == '__main__':
+#    app.run()  
     
