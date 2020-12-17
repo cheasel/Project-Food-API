@@ -398,9 +398,9 @@ def get_menu_from_ingredient():
         if 'limit' in request.args and 'skip' in request.args:
             skip = int(request.args['skip'])
             limit = int(request.args['limit'])
-            menu = menucol.find({ "ingredients.name" : { '$regex' : name} } and  {"title" : { "$regex" : name } } ).sort([('_id' , -1)]).limit(limit).skip(skip)
+            menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } ).sort([('_id' , -1)]).limit(limit).skip(skip)
         else:
-            menu = menucol.find({ "ingredients.name" : { '$regex' : name} } and  {"title" : { "$regex" : name } } )           
+            menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } )           
         #print('len = ',menucol.find({ "ingredients.name" : { '$regex' : name} }).count())
         return dumps(menu,ensure_ascii=False)
 
