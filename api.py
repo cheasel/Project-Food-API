@@ -57,11 +57,11 @@ def connectdb(DBname):
 def insert_receipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterol, fat, protein, user):
     mycol = connectdb("menu")
     if(mycol.find().count() == 0):
-        data = { '_id' : 1,'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : '' }
+        data = { '_id' : 1,'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date }
         x = mycol.insert_one(data)
     else:
         num = mycol.find({}, {'name' : 0}).sort([('_id' ,-1)]).limit(1)
-        data = { '_id' : num[0]['_id'] + 1,'user' : user, "title" : title ,"serve" : serve,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : ''}
+        data = { '_id' : num[0]['_id'] + 1,'user' : user, "title" : title ,"serve" : serve,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date}
         x = mycol.insert_one(data)
     return data
 
@@ -708,6 +708,67 @@ def add_receipe():
         trans = trans_ingredients(ing)
         get_nutrition(trans, serve)
         return insert_receipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterols, fats, proteins, user)
+
+@app.route('/api/menu/update', methods=['POST'])
+def update_menu():
+    if 'username' not in request.args:
+        return 'Error: No username. Please enter username.'
+    elif 'api_key' not in request.args:
+        return 'Error: No api-key. Please enter api-key. '
+    elif not request.json or not 'id' in request.json:
+        return 'Error: No id. Please enter id'
+    else:
+        mycol = connectdb('user')
+        if mycol.find({"username": request.args['username']}).count() != 0:
+            _id = mycol.find({"username": request.args['username']})[0]['_id']
+            mycol = connectdb('api')
+            api_key = mycol.find({"_id": _id})[0]['api_key']
+        else:
+            return 'Error: Wrong username.'
+
+        if 'api_key' not in request.args:
+            return 'Error: No api-key. Please enter api-key. '
+        elif 'api_key' in request.args and request.args['api_key'] != api_key:
+            return 'Error: Wrong api-key'
+        else:
+            if not request.json or not 'title' and 'serve' and 'ingredients' and 'preparations' and 'image' and 'reference' and 'user' in request.json:
+                return 'Error: Missing Informations. Please specify all Informations.'
+            else:
+                _id = request.json['_id']
+                title = request.json['title']
+                serve = request.json['serve']
+                description = request.json['description']
+                ingredients = request.json['ingredients']
+                preparations = request.json['preparations']
+                image = request.json['image']
+                reference = ''
+                date = datetime.datetime.now();
+                user = request.json['user']
+
+        for i in ingredients:
+            ingdata = i['name']+' '+i['value']+' '+i['unit']
+            ing.append(ingdata)
+
+        global calories
+        global carbohydrates
+        global cholesterols
+        global fats
+        global proteins
+
+        trans = trans_ingredients(ing)
+        get_nutrition(trans, serve)
+        mycol = connectdb("menu")
+        num = mycol.find({}, {'name' : 0}).sort([('_id' ,-1)]).limit(1)
+        if(image == ''):
+            return 'OK';
+        else:
+            return 'Not OK';
+        try:
+                return mycol.update_one({ '_id' : int(_id)}, { '$set': { 'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterols ,"fat" : fats ,"protein" : proteins }, "date_add" : date, "update" : date }})
+                #print('true')
+        except:
+                #print('false')
+                return 'false'
 
 #if __name__ == '__main__':
 #    app.run()  
