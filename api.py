@@ -454,7 +454,7 @@ def get_total_by_ingre():
         else:
             return 'Error: No name field provieded. Please specify a name.'
         menucol = connectdb('menu')
-        total = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } }).count()
+        total = menucol.find({ "ingredients.name" : { '$regex' : name } } or  {"title" : { "$regex" : name } }).count()
         return str(total)
 
 @app.route('/api/menu-detail/menu-name', methods=['GET'])
