@@ -15,9 +15,10 @@ from google.cloud import translate
 import pandas as pd
 from passlib.hash import pbkdf2_sha256
 
-#credential_path = "C:\\Users\\shabu\Desktop\\fluttertest\\foodapi-68021c8d36da.json"
-#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
-#project_id="future-name-268108"
+credential_path = "C:\\Users\\shabu\Desktop\\fluttertest\\foodapi-68021c8d36da.json"
+#credential_path = "/var/www/html/web/app/foodapi-68021c8d36da.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
+project_id="future-name-268108"
 
 get_nutrition_link = "https://api.edamam.com/api/nutrition-details?app_id=20334a52&app_key=19c996cb1f61d2d9f2a71efbbc87c97d"
 
@@ -54,32 +55,34 @@ def connectdb(DBname):
     mydb = myclient["Food"]
     return mydb[DBname]
 
-def insert_receipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterol, fat, protein, user):
+def insert_recipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterol, fat, protein, user, view):
     mycol = connectdb("menu")
     if(mycol.find().count() == 0):
-        data = { '_id' : 1,'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date }
+        data = { '_id' : 1,'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date, "views" : view}
         x = mycol.insert_one(data)
     else:
         num = mycol.find({}, {'name' : 0}).sort([('_id' ,-1)]).limit(1)
-        data = { '_id' : num[0]['_id'] + 1,'user' : user, "title" : title ,"serve" : serve,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date}
+        data = { '_id' : num[0]['_id'] + 1,'user' : user, "title" : title ,"serve" : serve,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date, "views" : view}
         x = mycol.insert_one(data)
     return data
 
 def trans_ingredients(ingredients):
-        translatedText = []
-        client = translate.TranslationServiceClient()
-        parent = client.location_path(project_id, "global")
-        for i in range(len(ingredients)):
-            response = client.translate_text(
-                parent=parent,
-                contents=[ingredients[i]],
-                mime_type="text/plain",
-                source_language_code="th",
-                target_language_code="en-US",
-            )
-            for translation in response.translations:
-                translatedText.append(format(translation.translated_text))
-        return translatedText
+    translatedText = []
+    client = translate.TranslationServiceClient()
+    #parent = client.location_path(project_id, "global")
+    location = "global"
+    parent = f"projects/"+project_id+"/locations/"+location
+    for i in range(len(ingredients)):
+        response = client.translate_text(
+            parent=parent,
+            contents=[ingredients[i]],
+            mime_type="text/plain",
+            source_language_code="th",
+            target_language_code="en-US",
+        )
+        for translation in response.translations:
+            translatedText.append(format(translation.translated_text))
+    return translatedText
 
 def get_nutrition(translatedText, serve):
     global calories
@@ -236,6 +239,7 @@ def sign_up():
         food_allergy = []
         #age = request.json['age']
         age = ''
+        gender = ''
         #weight = request.json['weight']
         weight = ''
         #height = request.json['height']
@@ -246,7 +250,7 @@ def sign_up():
             admin = 'False'
         else:
             admin = 'True'
-        add_user(username, email, password, name, surname, food_allergy, age, weight, height, admin, date, image )
+        add_user(username, email, password, name, surname, food_allergy, age, gender, weight, height, admin, date, image )
         add_api_key(username)
         data = mycol.find({ "email" : email })
         return dumps(data)
@@ -331,18 +335,61 @@ def update_user():
             surname = request.json['surname']
             email = request.json['email']
             age = request.json['age']
+            gender = request.json['gender']
             image = request.json['image']
             height = request.json['height']
             weight = request.json['weight']
             foodallergens = request.json['foodallergens']
             date = datetime.datetime.now()
-            try:
-                mycol.update_one({ '_id': int(_id) }, { '$set': { 'name': name, 'surname': surname, 'email': email, 'age': age, 'image': image, 'height': height, 'weight': weight, 'food_allergy': foodallergens, 'update': date } })
-                #print('true')
-                return 'true'
-            except:
-                #print('false')
-                return 'false'
+
+            if(image == ''):
+                try:
+                    mycol.update_one({ '_id': int(_id) }, { '$set': { 'name': name, 'surname': surname, 'email': email, 'age': age, 'gender': gender, 'height': height, 'weight': weight, 'food_allergy': foodallergens, 'update': date } })
+                    return 'true'
+                except:
+                    return 'false'
+            else:
+                try:
+                    mycol.update_one({ '_id': int(_id) }, { '$set': { 'name': name, 'surname': surname, 'email': email, 'age': age, 'gender': gender, 'image': image, 'height': height, 'weight': weight, 'food_allergy': foodallergens, 'update': date } })
+                    return 'true'
+                except:
+                    return 'false'
+
+@app.route('/api/user/delete', methods=["DELETE"])
+def delete_user():
+    if 'username' not in request.args:
+        return 'Error: No username. Please enter username.'
+    elif 'api_key' not in request.args:
+        return 'Error: No api-key. Please enter api-key. '
+    else:
+        mycol = connectdb('user')
+        if mycol.find({"username": request.args['username']}).count() != 0:
+            _id = mycol.find({"username": request.args['username']})[0]['_id']
+            admin = mycol.find({"username": request.args['username']})[0]['admin']
+            mycol = connectdb('api')
+            api_key = mycol.find({"_id": _id})[0]['api_key']
+        else:
+            return 'Error: Wrong username.'
+        
+        if admin != 'True':
+            return 'Error: Only admin can delete user.'
+        else:
+            if 'api_key' not in request.args:
+                return 'Error: No api-key. Please enter api-key. '
+            elif 'api_key' in request.args and request.args['api_key'] != api_key:
+                return 'Error: Wrong api-key'
+            elif 'id' not in request.args:
+                return 'Error: No id. Please enter id. '
+            else:
+                myuser = connectdb('user')
+                myapi = connectdb('api')
+                id = request.args['id']
+                try:
+                    myuser.delete_one({'_id': int(id)})
+                    myapi.delete_one({'_id': int(id)})
+                    return 'delete success'
+                except:
+                    return 'delete fail'
 
 @app.route('/api/menu-detail/user-id', methods=['GET'])
 def get_menu_from_user():
@@ -366,9 +413,9 @@ def get_menu_from_user():
         if 'limit' in request.args and 'skip' in request.args:
             skip = int(request.args['skip'])
             limit = int(request.args['limit'])
-            menu = menucol.find({ "_id" : request.args['id'] }).sort([('date_add' , -1)]).limit(limit).skip(skip)
+            menu = menucol.find({ "user" : request.args['id'] }).sort([('date_add' , -1)]).limit(limit).skip(skip)
         else:
-            menu = menucol.find({ "_id" : request.args['id'] }) .sort([('date_add', -1)])          
+            menu = menucol.find({ "user" : request.args['id'] }) .sort([('date_add', -1)])          
         #print('len = ',menucol.find({ "ingredients.name" : { '$regex' : name} }).count())
         return dumps(menu,ensure_ascii=False)
 
@@ -390,19 +437,25 @@ def get_menu_from_ingredient():
     elif 'api_key' in request.args and request.args['api_key'] != api_key:
         return 'Error: Wrong api-key'
     else:
-        if 'name' in request.args and 'skip' in request.args:
+        if 'name' in request.args:
             name = str(request.args['name']) 
+            menucol = connectdb('menu')
+            if 'limit' in request.args and 'skip' in request.args:
+                skip = int(request.args['skip'])
+                limit = int(request.args['limit'])
+                menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } ).sort([('_id' , -1)]).limit(limit).skip(skip)
+            else:
+                menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } )
+            return dumps(menu,ensure_ascii=False)
         else:
-            return 'Error: No name field provided. Please specify a name.'
-        menucol = connectdb('menu')
-        if 'limit' in request.args and 'skip' in request.args:
-            skip = int(request.args['skip'])
-            limit = int(request.args['limit'])
-            menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } ).sort([('_id' , -1)]).limit(limit).skip(skip)
-        else:
-            menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } )           
+            if 'limit' in request.args and 'skip' in request.args:
+                skip = int(request.args['skip'])
+                limit = int(request.args['limit'])
+                menu = menucol.find().sort([('_id' , -1)]).limit(limit).skip(skip)
+            else:
+                menu = menucol.find()
+            return dumps(menu,ensure_ascii=False)         
         #print('len = ',menucol.find({ "ingredients.name" : { '$regex' : name} }).count())
-        return dumps(menu,ensure_ascii=False)
 
 @app.route('/api/menu-detail/ingre-name', methods=['POST'])
 def post_menu_from_ingredient():
@@ -509,7 +562,7 @@ def get_menu_from_id():
         menu = menucol.find({ "_id" : menu_id } )
         return dumps(menu,ensure_ascii=False)
 
-'''@app.route('/api/menu-detail/total-menu', methods=['GET'])
+@app.route('/api/menu-detail/total-menu', methods=['GET'])
 def get_total_menu():
     if 'username' not in request.args:
         return 'Error: No username. Please enter username.'
@@ -529,9 +582,9 @@ def get_total_menu():
     else:
         menucol = connectdb('menu')
         total = menucol.find().count()
-        return str(total)'''
+        return str(total)
 
-'''@app.route('/api/menu-detail/limit-menu', methods=['GET'])
+@app.route('/api/menu-detail/limit-menu', methods=['GET'])
 def get_limit_menu():
     if 'username' not in request.args:
         return 'Error: No username. Please enter username.'
@@ -553,15 +606,21 @@ def get_limit_menu():
             skip = int(request.args['skip'])
         else:
             return 'Error: No skip field provieded. Please specify a skip.'
-        mycol = connectdb('menu')
-        menu = mycol.find().limit(20).skip(skip)
+        menucol = connectdb('menu')
+        if 'limit' in request.args and 'skip' in request.args:
+            skip = int(request.args['skip'])
+            limit = int(request.args['limit'])
+            menu = menucol.find().sort([('_id' , -1)]).limit(limit).skip(skip)
+        else:
+            menu = menucol.find().sort([('_id' , -1)])  
+        return dumps(menu,ensure_ascii=False)
         #result = []
         #for send in menu:
         #    result.append(send)
         #print(type(dict(result)))
         #print(type(json.dumps(menu)))
-        return dumps(menu,ensure_ascii=False)
-        #return dumps(menu)'''
+        #return dumps(menu,ensure_ascii=False)
+        #return dumps(menu)
 
 @app.route('/api/add-excel', methods=['POST'])
 def add_excel_menu():
@@ -596,18 +655,18 @@ def add_excel_menu():
                     'image' : [],
                     'reference' : []
                 }
-                receipe = pd.read_excel(file, dtype = 'str')
-                print(len(receipe))
-                for i in range(len(receipe)):
-                    menu['title'].append(receipe['menu_name'][i]) 
-                    menu['serve'].append(receipe['serve'][i]) 
-                    menu['preparations'].append(receipe['preparations'][i].split(',')) 
-                    menu['ingredients'].append(receipe['ingredients'][i].split(',')) 
-                    menu['image'].append(receipe['image'][i]) 
-                    menu['reference'].append(receipe['reference'][i]) 
+                recipe = pd.read_excel(file, dtype = 'str')
+                print(len(recipe))
+                for i in range(len(recipe)):
+                    menu['title'].append(recipe['menu_name'][i]) 
+                    menu['serve'].append(recipe['serve'][i]) 
+                    menu['preparations'].append(recipe['preparations'][i].split(',')) 
+                    menu['ingredients'].append(recipe['ingredients'][i].split(',')) 
+                    menu['image'].append(recipe['image'][i]) 
+                    menu['reference'].append(recipe['reference'][i]) 
                 print(menu)
         data = {}
-        for tmp in range(len(receipe)):
+        for tmp in range(len(recipe)):
             ing.clear()
             for j in menu['ingredients'][tmp]:
                 temp = len(j.split()) - 1
@@ -635,16 +694,21 @@ def add_excel_menu():
             global cholesterols
             global fats
             global proteins
+            calories.clear()
+            carbohydrates.clear()
+            cholesterols.clear()
+            fats.clear()
+            proteins.clear()
 
             trans = trans_ingredients(menu['ingredients'][tmp])
             
             get_nutrition(trans, menu['serve'][tmp])
-            data[tmp] = insert_receipe(menu['title'][tmp], menu['serve'][tmp], menu['preparations'][tmp], ing, menu['image'][tmp], menu['reference'][tmp], calories, carbohydrates, cholesterols, fats, proteins)
+            data[tmp] = insert_recipe(menu['title'][tmp], menu['serve'][tmp], menu['preparations'][tmp], ing, menu['image'][tmp], menu['reference'][tmp], calories, carbohydrates, cholesterols, fats, proteins)
         print(type(data))
         return data
 
-@app.route('/api/add-receipe', methods=['POST'])
-def add_receipe():
+@app.route('/api/add-recipe', methods=['POST'])
+def add_recipe():
     if 'username' not in request.args:
         return 'Error: No username. Please enter username.'
     else:
@@ -661,7 +725,7 @@ def add_receipe():
     elif 'api_key' in request.args and request.args['api_key'] != api_key:
         return 'Error: Wrong api-key'
     else:
-        if not request.json or not 'title' and 'serve' and 'ingredients' and 'preparations' and 'image' and 'reference' and 'user' in request.json:
+        if not request.json or not 'title' and 'serve' and 'ingredients' and 'preparations' and 'description' and 'image' and 'reference' and 'user' in request.json:
             return 'Error: Missing Informations. Please specify all Informations.'
         else:
             title = request.json['title']
@@ -671,11 +735,12 @@ def add_receipe():
             preparations = request.json['preparations']
             image = request.json['image']
             reference = ''
-            date = datetime.datetime.now();
+            date = datetime.datetime.now()
             user = request.json['user']
-
+            view = 0
+        ing.clear()
         for i in ingredients:
-            ingdata = i['name']+' '+i['value']+' '+i['unit']
+            ingdata = i['name']+' '+str(i['value'])+' '+i['unit']
             ing.append(ingdata)
         
         '''for i in ingredients:
@@ -707,7 +772,7 @@ def add_receipe():
 
         trans = trans_ingredients(ing)
         get_nutrition(trans, serve)
-        return insert_receipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterols, fats, proteins, user)
+        return insert_recipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterols, fats, proteins, user, view)
 
 @app.route('/api/menu/update', methods=['POST'])
 def update_menu():
@@ -715,7 +780,7 @@ def update_menu():
         return 'Error: No username. Please enter username.'
     elif 'api_key' not in request.args:
         return 'Error: No api-key. Please enter api-key. '
-    elif not request.json or not 'id' in request.json:
+    elif not request.json or not 'userid' in request.json:
         return 'Error: No id. Please enter id'
     else:
         mycol = connectdb('user')
@@ -731,10 +796,10 @@ def update_menu():
         elif 'api_key' in request.args and request.args['api_key'] != api_key:
             return 'Error: Wrong api-key'
         else:
-            if not request.json or not 'title' and 'serve' and 'ingredients' and 'preparations' and 'image' and 'reference' and 'user' in request.json:
+            if not request.json or not 'foodid' and 'title' and 'serve' and 'ingredients' and 'preparations' and 'description' and 'image' and 'userid' in request.json:
                 return 'Error: Missing Informations. Please specify all Informations.'
             else:
-                _id = request.json['_id']
+                foodid = request.json['foodid']
                 title = request.json['title']
                 serve = request.json['serve']
                 description = request.json['description']
@@ -742,34 +807,94 @@ def update_menu():
                 preparations = request.json['preparations']
                 image = request.json['image']
                 reference = ''
-                date = datetime.datetime.now();
-                user = request.json['user']
-
+                date = datetime.datetime.now()
+                user = request.json['userid']
+        ing.clear()
         for i in ingredients:
-            ingdata = i['name']+' '+i['value']+' '+i['unit']
+            #return i
+            ingdata = i['name']+' '+str(i['value'])+' '+i['unit']
             ing.append(ingdata)
-
+        
         global calories
         global carbohydrates
         global cholesterols
         global fats
         global proteins
+        print(ing)
+        print(calories)
+        print(carbohydrates)
+        print(cholesterols)
+        print(fats)
+        print(proteins)
 
         trans = trans_ingredients(ing)
         get_nutrition(trans, serve)
+        print(calories)
+        print(carbohydrates)
+        print(cholesterols)
+        print(fats)
+        print(proteins)
+
         mycol = connectdb("menu")
-        num = mycol.find({}, {'name' : 0}).sort([('_id' ,-1)]).limit(1)
-        if(image == ''):
-            return 'OK';
+
+        if(image == '' or image == None):
+            try:
+                mycol.update_one({ '_id' : int(foodid)}, { '$set': { 'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterols ,"fat" : fats ,"protein" : proteins },"update" : date }})
+                return 'true'
+            except:
+                return 'false'
         else:
-            return 'Not OK';
-        try:
-                return mycol.update_one({ '_id' : int(_id)}, { '$set': { 'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterols ,"fat" : fats ,"protein" : proteins }, "date_add" : date, "update" : date }})
-                #print('true')
-        except:
-                #print('false')
+            try:
+                data = mycol.update_one({ '_id' : int(foodid)}, { '$set': { 'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterols ,"fat" : fats ,"protein" : proteins },"update" : date }})
+                return 'true'
+            except:
                 return 'false'
 
-#if __name__ == '__main__':
-#    app.run()  
+@app.route('/api/menu/delete', methods=['DELETE'])
+def delete_menu():
+    if 'username' not in request.args:
+        return 'Error: No username. Please enter username.'
+    elif 'api_key' not in request.args:
+        return 'Error: No api-key. Please enter api-key. '
+    else:
+        mycol = connectdb('user')
+        if mycol.find({"username": request.args['username']}).count() != 0:
+            _id = mycol.find({"username": request.args['username']})[0]['_id']
+            mycol = connectdb('api')
+            api_key = mycol.find({"_id": _id})[0]['api_key']
+        else:
+            return 'Error: Wrong username.'
+
+        if 'api_key' not in request.args:
+            return 'Error: No api-key. Please enter api-key. '
+        elif 'api_key' in request.args and request.args['api_key'] != api_key:
+            return 'Error: Wrong api-key'
+        else:
+            if 'id' not in request.args:
+                return 'Error: Missing Informations. Please specify all Informations.'
+            else:
+                foodid = request.args['id']
+                print('-------------- ',foodid,' ---------------')
+                myfood = connectdb('menu')
+                try:
+                    myfood.delete_one({'_id': int(foodid)})
+                    return 'delete success'
+                except:
+                    return 'delete fail'
+
+@app.route('/api/recipe/view', methods=['GET'])
+def view_update():
+    if 'foodid' not in request.args:
+        return 'Error: No api-key. Please enter api-key. '
+    else:
+        foodid = request.args['foodid']
+        menucol = connectdb('menu')
+        menucol.update_one({ '_id' : int(foodid)}, { '$inc': { 'views' : 1 }})
+        return 'true'
+
+if __name__ == '__main__':
+    #mycol = connectdb("menu")
+    #mycol.update_many({"views": {"$exists": False}}, {"$set": {"views": 0}})
+    app.debug = True
+    app.run()  
     
