@@ -39,6 +39,8 @@ options = Options()
 options.add_argument('-headless')
 driver = webdriver.Firefox(options=options)
 
+total_page = 100
+
 def connectdb(DBname):
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["Food"]
@@ -215,7 +217,8 @@ class CP_Recipe:
     def duplicate_check(self):
         mycol = connectdb('menu')
         if(mycol.find({'title': self.title}).count() == 0):
-            insert_receipe(self.title, self.serve, self.preparations, self.ing, self.image, self.reference, self.calories, self.carbohydrates, self.cholesterol, self.fat, self.protein)
+            print('add menu')
+            #insert_receipe(self.title, self.serve, self.preparations, self.ing, self.image, self.reference, self.calories, self.carbohydrates, self.cholesterol, self.fat, self.protein)
         else:
             print('duplicate menu')
 
@@ -281,10 +284,7 @@ class CP_Recipe:
 driver.get(CP_url)
 driver.implicitly_wait(80)
 
-xpath = '//*[@id="feed_pagination"]/a'
-btn = driver.find_element_by_xpath(xpath)
-btn.click()
-for i in range(100):
+for i in range(total_page):
     driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
     time.sleep(5)
 

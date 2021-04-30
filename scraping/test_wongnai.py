@@ -24,6 +24,7 @@ name = ''
 value = ''
 unit = ''
 
+total_page = 100
 title_class = 'sc-1s3pom6-0 jsSyKa'
 serve_class = 'e4xsl4-1 bwjFPx'
 ing_class = 'e4xsl4-2 lmAAgG'
@@ -37,6 +38,7 @@ options = Options()
 options.add_argument('-headless')
 profile = webdriver.FirefoxProfile()
 driver = webdriver.Firefox(profile,options=options)
+driver.maximize_window()
 
 def connectdb(DBname):
     #myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -109,9 +111,11 @@ class WN_Recipe:
         return new
 
     def button_click(self):
-        xpath = '/html/body/div[1]/div/div[1]/div[3]/div/div/div[1]/div[1]/div/div[2]/div/div/div[2]/button'
+        xpath = '/html/body/div[1]/div/div/div[1]/div[3]/div/div/div[1]/div[1]/div/div[2]/div/div/div[2]/button'
         btn = driver.find_element_by_xpath(xpath)
-        btn.click()
+        driver.execute_script("arguments[0].click();", btn)
+        #btn = driver.find_element_by_xpath(xpath)
+        #btn.click()
 
     def get_menuUrl(self, temp):
         for i in temp.find_all('div', {'class': '_21btc6ycbuwmnmRpkhCZGl sc-5qrr3t-2 fJgfQS'}):
@@ -286,14 +290,15 @@ class WN_Recipe:
         time.sleep(4)
         self.get_nutrition()
         time.sleep(3)
-        insert_receipe(self.title, self.serve, self.preparations, self.ing, self.image, self.reference, self.calories, self.carbohydrates, self.cholesterol, self.fat, self.protein)
+        #insert_receipe(self.title, self.serve, self.preparations, self.ing, self.image, self.reference, self.calories, self.carbohydrates, self.cholesterol, self.fat, self.protein)
 
     def __init__(self):
         global success
         global fail
         profile.set_preference("general.useragent.override", random.choice(self.user_agent_list))
         self.openUrl(self.url)
-        for i in range(1):
+        time.sleep(5)
+        for i in range(total_page):
             print('page ',int(i)+1)
             self.button_click()
             time.sleep(3)
@@ -303,6 +308,7 @@ class WN_Recipe:
         for i in range(len(self.menuName)):
             self.duplicate_check(i)
             print('menu : ',i)
+
         for j in self.WN_url:
             print('attempting to build from page: '+j)
             try:
@@ -326,3 +332,5 @@ if __name__ == '__main__':
     WN_Recipe()
     print('success : ',success)
     print('fail : ',fail)
+
+
