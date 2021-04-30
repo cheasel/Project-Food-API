@@ -19,21 +19,21 @@ from PIL import Image
 #credential_path = "C:\\Users\\shabu\\Desktop\\fluttertest\\foodapi-68021c8d36da.json"
 credential_path = "/var/www/html/web/app/foodapi-68021c8d36da.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
-project_id="future-name-268108"
+project_id = "future-name-268108"
 
 get_nutrition_link = "https://api.edamam.com/api/nutrition-details?app_id=20334a52&app_key=19c996cb1f61d2d9f2a71efbbc87c97d"
 
 user_agent_list = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36',
-'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36',
-'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/70.0',
-'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 OPR/64.0.3417.73',
-'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 OPR/64.0.3417.73',
-'Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko'
-]
+                   'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36',
+                   'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/70.0',
+                   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 OPR/64.0.3417.73',
+                   'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36 OPR/64.0.3417.73',
+                   'Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko'
+                   ]
 user_agent = random.choice(user_agent_list)
 hdr = {'accept': 'test/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-'referer': 'http://www.google.com/',
-'user-agent': user_agent}
+       'referer': 'http://www.google.com/',
+       'user-agent': user_agent}
 
 ALLOWED_EXTENSIONS = {'xlsx'}
 
@@ -47,22 +47,28 @@ fats = []
 proteins = []
 cholesterols = []
 
+
 def connectdb(DBname):
     password = urllib.parse.quote_plus('L1verp@@l')
-    myclient = pymongo.MongoClient("mongodb://cheasel:%s@preproject-shard-00-00-i1n8s.gcp.mongodb.net:27017,preproject-shard-00-01-i1n8s.gcp.mongodb.net:27017,preproject-shard-00-02-i1n8s.gcp.mongodb.net:27017/test?ssl=true&replicaSet=Preproject-shard-0&authSource=admin&retryWrites=true&w=majority"%(password))
+    myclient = pymongo.MongoClient(
+        "mongodb://cheasel:%s@preproject-shard-00-00-i1n8s.gcp.mongodb.net:27017,preproject-shard-00-01-i1n8s.gcp.mongodb.net:27017,preproject-shard-00-02-i1n8s.gcp.mongodb.net:27017/test?ssl=true&replicaSet=Preproject-shard-0&authSource=admin&retryWrites=true&w=majority" % (password))
     mydb = myclient["Food"]
     return mydb[DBname]
+
 
 def insert_recipe(title, serve, description, preparations, ingredients, image, reference, date, calories, carbohydrates, cholesterol, fat, protein, user, view):
     mycol = connectdb("menu")
     if(mycol.find().count() == 0):
-        data = { '_id' : 1,'user' : user, "title" : title ,"serve" : serve ,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date, "views" : view}
+        data = {'_id': 1, 'user': user, "title": title, "serve": serve, "description": description, "ingredients": ingredients, "preparations": preparations, "image": image, "reference": reference,
+                "nutrition": {"calories": calories, "carbohydrates": carbohydrates, "cholesterol": cholesterol, "fat": fat, "protein": protein}, "date_add": date, "update": date, "views": view}
         x = mycol.insert_one(data)
     else:
-        num = mycol.find({}, {'name' : 0}).sort([('_id' ,-1)]).limit(1)
-        data = { '_id' : num[0]['_id'] + 1,'user' : user, "title" : title ,"serve" : serve,"description" : description ,"ingredients" : ingredients ,"preparations" : preparations,"image" : image,"reference" : reference,"nutrition" : {"calories" : calories ,"carbohydrates" : carbohydrates ,"cholesterol" : cholesterol ,"fat" : fat ,"protein" : protein }, "date_add" : date, "update" : date, "views" : view}
+        num = mycol.find({}, {'name': 0}).sort([('_id', -1)]).limit(1)
+        data = {'_id': num[0]['_id'] + 1, 'user': user, "title": title, "serve": serve, "description": description, "ingredients": ingredients, "preparations": preparations, "image": image,
+                "reference": reference, "nutrition": {"calories": calories, "carbohydrates": carbohydrates, "cholesterol": cholesterol, "fat": fat, "protein": protein}, "date_add": date, "update": date, "views": view}
         x = mycol.insert_one(data)
     return data
+
 
 def trans_ingredients(ingredients):
     translatedText = []
@@ -81,6 +87,7 @@ def trans_ingredients(ingredients):
             translatedText.append(format(translation.translated_text))
     return translatedText
 
+
 def get_nutrition(translatedText, serve):
     global calories
     global carbohydrates
@@ -98,7 +105,8 @@ def get_nutrition(translatedText, serve):
             data = {"yield": serve, "ingr": [temp]}
         else:
             data = {"yield": serve, "ingr": [translatedText[i]]}
-        nutrition_data = json.loads(requests.post(get_nutrition_link, json=data,headers=hdr).content.decode("utf_8", "ignore"))
+        nutrition_data = json.loads(requests.post(
+            get_nutrition_link, json=data, headers=hdr).content.decode("utf_8", "ignore"))
         if len(nutrition_data) != 1:
             calorie += get_calories(nutrition_data)['quantity']
             carbohydrate += get_carbohydrates(nutrition_data)['quantity']
@@ -111,55 +119,60 @@ def get_nutrition(translatedText, serve):
     fats = {'quantity': fat, 'unit': 'g'}
     proteins = {'quantity': protein, 'unit': 'g'}
 
+
 def get_calories(nutrition_data):
-        try:
-            return {"quantity" : float(nutrition_data['totalNutrients']['ENERC_KCAL']['quantity']) ,
-                    "unit" : nutrition_data['totalNutrients']['ENERC_KCAL']['unit'] ,
-                    "percent" : float(nutrition_data['totalDaily']['ENERC_KCAL']['quantity'])}
-        except:
-            return {"quantity" : 0 ,
-                    "unit" : 'kcal' ,
-                    "percent" : 0}
-    
+    try:
+        return {"quantity": float(nutrition_data['totalNutrients']['ENERC_KCAL']['quantity']),
+                "unit": nutrition_data['totalNutrients']['ENERC_KCAL']['unit'],
+                "percent": float(nutrition_data['totalDaily']['ENERC_KCAL']['quantity'])}
+    except:
+        return {"quantity": 0,
+                "unit": 'kcal',
+                "percent": 0}
+
+
 def get_carbohydrates(nutrition_data):
-        try:
-            return {"quantity" : float(nutrition_data['totalNutrients']['CHOCDF']['quantity']) ,
-                    "unit" : nutrition_data['totalNutrients']['CHOCDF']['unit'] ,
-                    "percent" : float(nutrition_data['totalDaily']['CHOCDF']['quantity'])}
-        except:
-            return {"quantity" : 0 ,
-                    "unit" : 'g' ,
-                    "percent" : 0}
-        
+    try:
+        return {"quantity": float(nutrition_data['totalNutrients']['CHOCDF']['quantity']),
+                "unit": nutrition_data['totalNutrients']['CHOCDF']['unit'],
+                "percent": float(nutrition_data['totalDaily']['CHOCDF']['quantity'])}
+    except:
+        return {"quantity": 0,
+                "unit": 'g',
+                "percent": 0}
+
+
 def get_chole(nutrition_data):
-        try:
-            return {"quantity" : float(nutrition_data['totalNutrients']['CHOLE']['quantity']) ,
-                    "unit" : nutrition_data['totalNutrients']['CHOLE']['unit'] , 
-                    "percent" : float(nutrition_data['totalDaily']['CHOLE']['quantity'])}
-        except:
-            return {"quantity" : 0 ,
-                    "unit" : 'mg' ,
-                    "percent" : 0}
+    try:
+        return {"quantity": float(nutrition_data['totalNutrients']['CHOLE']['quantity']),
+                "unit": nutrition_data['totalNutrients']['CHOLE']['unit'],
+                "percent": float(nutrition_data['totalDaily']['CHOLE']['quantity'])}
+    except:
+        return {"quantity": 0,
+                "unit": 'mg',
+                "percent": 0}
+
 
 def get_fat(nutrition_data):
-        try:
-            return {"quantity" : float(nutrition_data['totalNutrients']['FAT']['quantity']) ,
-                    "unit" : nutrition_data['totalNutrients']['FAT']['unit'] , 
-                    "percent" : float(nutrition_data['totalDaily']['FAT']['quantity'])}
-        except:
-            return {"quantity" : 0 ,
-                    "unit" : 'g' ,
-                    "percent" : 0}
-        
+    try:
+        return {"quantity": float(nutrition_data['totalNutrients']['FAT']['quantity']),
+                "unit": nutrition_data['totalNutrients']['FAT']['unit'],
+                "percent": float(nutrition_data['totalDaily']['FAT']['quantity'])}
+    except:
+        return {"quantity": 0,
+                "unit": 'g',
+                "percent": 0}
+
+
 def get_protein(nutrition_data):
-        try:
-            return {"quantity" : float(nutrition_data['totalNutrients']['PROCNT']['quantity']) ,
-                    "unit" : nutrition_data['totalNutrients']['PROCNT']['unit'] ,
-                    "percent" : float(nutrition_data['totalDaily']['PROCNT']['quantity'])}
-        except:
-            return {"quantity" : 0 ,
-                    "unit" : 'g' ,
-                    "percent" : 0}
+    try:
+        return {"quantity": float(nutrition_data['totalNutrients']['PROCNT']['quantity']),
+                "unit": nutrition_data['totalNutrients']['PROCNT']['unit'],
+                "percent": float(nutrition_data['totalDaily']['PROCNT']['quantity'])}
+    except:
+        return {"quantity": 0,
+                "unit": 'g',
+                "percent": 0}
 
 def add_user(username, email, password, name, surname, food_allergy, age, gender, weight, height, admin, date, image ):
     mycol = connectdb('user')
@@ -457,227 +470,6 @@ def get_menu_from_user():
             menu = menucol.find({ "user" : request.args['id'] }) .sort([('date_add', -1)])
         return dumps(menu,ensure_ascii=False)
 
-@app.route('/api/menu-detail/ingre-name', methods=['GET'])
-def get_menu_from_ingredient():
-    if 'username' not in request.args:
-        return 'Error: No username. Please enter username.'
-    else:
-        mycol = connectdb('user')
-        if mycol.find({"username": request.args['username']}).count() != 0:
-            _id = mycol.find({"username": request.args['username']})[0]['_id']
-            mycol = connectdb('api')
-            api_key = mycol.find({"_id": _id})[0]['api_key']
-        else:
-            return 'Error: Wrong username.'
-
-    if 'api_key' not in request.args:
-        return 'Error: No api-key. Please enter api-key. '
-    elif 'api_key' in request.args and request.args['api_key'] != api_key:
-        return 'Error: Wrong api-key'
-    else:
-        if 'name' in request.args:
-            name = str(request.args['name']) 
-            menucol = connectdb('menu')
-            if 'limit' in request.args and 'skip' in request.args:
-                skip = int(request.args['skip'])
-                limit = int(request.args['limit'])
-                menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } ).sort([('_id' , -1)]).limit(limit).skip(skip)
-            else:
-                menu = menucol.find({ "ingredients.name" : { '$regex' : name} } or  {"title" : { "$regex" : name } } ).sort([('_id' , -1)])
-            return dumps(menu,ensure_ascii=False)
-        else:
-            if 'limit' in request.args and 'skip' in request.args:
-                skip = int(request.args['skip'])
-                limit = int(request.args['limit'])
-                menu = menucol.find().sort([('_id' , -1)]).limit(limit).skip(skip)
-            else:
-                menu = menucol.find()
-            return dumps(menu,ensure_ascii=False)      
-
-@app.route('/api/menu-detail/ingre-name', methods=['POST'])
-def post_menu_from_ingredient():
-    if 'username' not in request.args:
-        return 'Error: No username. Please enter username.'
-    else:
-        mycol = connectdb('user')
-        if mycol.find({"username": request.args['username']}).count() != 0:
-            _id = mycol.find({"username": request.args['username']})[0]['_id']
-            mycol = connectdb('api')
-            api_key = mycol.find({"_id": _id})[0]['api_key']
-        else:
-            return 'Error: Wrong username.'
-
-    if 'api_key' not in request.args:
-        return 'Error: No api-key. Please enter api-key. '
-    elif 'api_key' in request.args and request.args['api_key'] != api_key:
-        return 'Error: Wrong api-key'
-    else:
-        if not request.json or not 'name' in request.json:
-            return 'Error: No name field provieded. Please specify a name.'
-        else:
-            name = request.json['name']
-        menucol = connectdb('menu')
-        menu = menucol.find({ "ingredients.name" : { '$in' : name } })
-        return dumps(menu,ensure_ascii=False)
-
-@app.route('/api/menu-detail/advance-search', methods=['POST'])
-def get_menu_advance_search():
-    if 'username' not in request.args:
-        return 'Error: No username. Please enter username.'
-    else:
-        mycol = connectdb('user')
-        if mycol.find({"username": request.args['username']}).count() != 0:
-            _id = mycol.find({"username": request.args['username']})[0]['_id']
-            mycol = connectdb('api')
-            api_key = mycol.find({"_id": _id})[0]['api_key']
-        else:
-            return 'Error: Wrong username.'
-
-    if 'api_key' not in request.args:
-        return 'Error: No api-key. Please enter api-key. '
-    elif 'api_key' in request.args and request.args['api_key'] != api_key:
-        return 'Error: Wrong api-key'
-    else:
-        menucol = connectdb('menu')
-        if 'mincal' in request.json:
-            mincal = int(request.json['mincal'])
-        else:
-            mincal = 0
-        if 'maxcal' in request.json:
-            maxcal = int(request.json['maxcal'])
-        else:
-            maxcal = 9999
-        if 'minchol' in request.json:
-            minchol = int(request.json['minchol'])
-        else:
-            minchol = 0
-        if 'maxchol' in request.json:
-            maxchol = int(request.json['maxchol'])
-        else:
-            maxchol = 9999
-        if 'mincarb' in request.json:
-            mincarb = int(request.json['mincarb'])
-        else:
-            mincarb = 0
-        if 'maxcarb' in request.json:
-            maxcarb = int(request.json['maxcarb'])
-        else:
-            maxcarb = 9999
-        if 'minfat' in request.json:
-            minfat = int(request.json['minfat'])
-        else:
-            minfat = 0
-        if 'maxfat' in request.json:
-            maxfat = int(request.json['maxfat'])
-        else:
-            maxfat = 9999
-        if 'minprotein' in request.json:
-            minprotein = int(request.json['minprotein'])
-        else:
-            minprotein = 0
-        if 'maxprotein' in request.json:
-            maxprotein = int(request.json['maxprotein'])
-        else:
-            maxprotein = 9999
-
-        if 'title' in request.json:
-            title = str(request.json['title'])
-        else:
-            return 'Error: No title field provieded. Please specify a title.'
-
-        if 'name' in request.json:
-            if request.json['name'] != [] and request.json['name'] != [''] :
-                name = request.json['name']
-                for i in range(len(name)):
-                    name[i] = re.compile('.*'+name[i]+'.*')
-            else:
-                name = ['']
-        else:
-            name = ['']
-        if 'exname' in request.json :
-            if request.json['exname'] != [] and request.json['exname'] != [''] :
-                exname = request.json['exname']
-                for i in range(len(exname)):
-                    exname[i] = re.compile('.*'+exname[i]+'.*')
-            else:
-                exname = ['']
-        else:
-            exname = ['']
-        
-        if 'limit' in request.args or 'skip' in request.args :
-            if 'skip' in request.args:
-                skip = int(request.args['skip'])
-            else:
-                skip = 0
-            if 'limit' in request.args:
-                limit = int(request.args['limit'])
-            else:
-                limit = 0
-
-            if name == [''] and exname == [''] :
-                menu = menucol.find( { "$and" : [ { "title" : { "$regex" : title } } , {"nutrition.calories.quantity" : { "$gte" : mincal, "$lt" : maxcal } } , { "nutrition.cholesterol.quantity" : { "$gte" : minchol, "$lt" : maxchol } } , { "nutrition.carbohydrates.quantity" : { "$gte" : mincarb, "$lt" : maxcarb } } , { "nutrition.fat.quantity" : { "$gte" : minfat, "$lt" : maxfat } } , { "nutrition.protein.quantity" : { "$gte" : minprotein, "$lt" : maxprotein } } ] } ).sort([('_id' , -1)]).limit(limit).skip(skip)
-            else :
-                menu = menucol.find( { "$and" : [ { "title" : { "$regex" : title } } , { "ingredients.name" : { '$in' : name } } , { "ingredients.name" : { "$not" : { "$in" : exname } } } , { "nutrition.calories.quantity" : { "$gte" : mincal, "$lt" : maxcal } } , { "nutrition.cholesterol.quantity" : { "$gte" : minchol, "$lt" : maxchol } }  , { "nutrition.carbohydrates.quantity" : { "$gte" : mincarb, "$lt" : maxcarb } } , { "nutrition.fat.quantity" : { "$gte" : minfat, "$lt" : maxfat } } , { "nutrition.protein.quantity" : { "$gte" : minprotein, "$lt" : maxprotein } } ] } ).sort([('_id' , -1)]).limit(limit).skip(skip)
-        else:
-            if name == [''] and exname == [''] :
-                menu = menucol.find( { "$and" : [ { "title" : { "$regex" : title } } , {"nutrition.calories.quantity" : { "$gte" : mincal, "$lt" : maxcal } } , { "nutrition.cholesterol.quantity" : { "$gte" : minchol, "$lt" : maxchol } } , { "nutrition.carbohydrates.quantity" : { "$gte" : mincarb, "$lt" : maxcarb } } , { "nutrition.fat.quantity" : { "$gte" : minfat, "$lt" : maxfat } } , { "nutrition.protein.quantity" : { "$gte" : minprotein, "$lt" : maxprotein } } ] } ).sort([('_id' , -1)])
-            else :
-                menu = menucol.find( { "$and" : [ { "title" : { "$regex" : title } } , { "ingredients.name" : { '$in' : name } } , { "ingredients.name" : { "$not" : { "$in" : exname } } } , { "nutrition.calories.quantity" : { "$gte" : mincal, "$lt" : maxcal } } , { "nutrition.cholesterol.quantity" : { "$gte" : minchol, "$lt" : maxchol } }  , { "nutrition.carbohydrates.quantity" : { "$gte" : mincarb, "$lt" : maxcarb } } , { "nutrition.fat.quantity" : { "$gte" : minfat, "$lt" : maxfat } } , { "nutrition.protein.quantity" : { "$gte" : minprotein, "$lt" : maxprotein } } ] } ).sort([('_id' , -1)])
-        
-        return dumps(menu,ensure_ascii=False)
-
-@app.route('/api/menu-detail/total-search-ingre', methods=['GET'])
-def get_total_by_ingre():
-    if 'username' not in request.args:
-        return 'Error: No username. Please enter username.'
-    else:
-        mycol = connectdb('user')
-        if mycol.find({"username": request.args['username']}).count() != 0:
-            _id = mycol.find({"username": request.args['username']})[0]['_id']
-            mycol = connectdb('api')
-            api_key = mycol.find({"_id": _id})[0]['api_key']
-        else:
-            return 'Error: Wrong username.'
-
-    if 'api_key' not in request.args:
-        return 'Error: No api-key. Please enter api-key. '
-    elif 'api_key' in request.args and request.args['api_key'] != api_key:
-        return 'Error: Wrong api-key'
-    else:
-        if 'name' in request.args:
-            name = str(request.args['name'])
-        else:
-            return 'Error: No name field provieded. Please specify a name.'
-        menucol = connectdb('menu')
-        total = menucol.find({ "ingredients.name" : { '$regex' : name } } or  {"title" : { "$regex" : name } }).count()
-        return str(total)
-
-@app.route('/api/menu-detail/menu-name', methods=['GET'])
-def get_menu_from_name():
-    if 'username' not in request.args:
-        return 'Error: No username. Please enter username.'
-    else:
-        mycol = connectdb('user')
-        if mycol.find({"username": request.args['username']}).count() != 0:
-            _id = mycol.find({"username": request.args['username']})[0]['_id']
-            mycol = connectdb('api')
-            api_key = mycol.find({"_id": _id})[0]['api_key']
-        else:
-            return 'Error: Wrong username.'
-
-    if 'api_key' not in request.args:
-        return 'Error: No api-key. Please enter api-key. '
-    elif 'api_key' in request.args and request.args['api_key'] != api_key:
-        return 'Error: Wrong api-key'
-    else:
-        if 'name' in request.args:
-            name = str(request.args['name'])
-        else:
-            return 'Error: No name field provieded. Please specify a name.'
-        menucol = connectdb('menu')
-        menu = menucol.find({ "title" : { "$regex" : name } } )
-        return dumps(menu,ensure_ascii=False)
-
 @app.route('/api/menu-detail/menu-id', methods=['GET'])
 def get_menu_from_id():
     if 'username' not in request.args:
@@ -971,53 +763,3 @@ def view_update():
         menucol = connectdb('menu')
         menucol.update_one({ '_id' : int(foodid)}, { '$inc': { 'views' : 1 }})
         return 'true'
-
-@app.route('/api/imgpath', methods=['GET'])
-def path_update():
-    menucol = connectdb('menu')
-    data = menucol.find()
-    for i in data:
-        menucol.update_one({ '_id' : i["_id"]}, { '$set': { 'image': 'food_image/food_img_'+str(i["_id"])+'.jpg'}})
-    return 'true'
-
-def get_token():
-    conn = http.client.HTTPSConnection("api.sirv.com")
-    payload = "{\"clientId\":\"SxAu8RlwWAnK287F595Q09Bt1kc\",\"clientSecret\":\"/wt6zayuTLFYeiei8mxY/lOqkKZ/lVTuS4gXMjJvikWJSXF8M7NL21gGykUcpV1bHbAE7KF4f5MHTtRZdetk8A==\"}"
-    headers = {
-        'content-type': "application/json"
-    }
-    conn.request("POST", "/v2/token", payload, headers)
-    res = conn.getresponse()
-    data = res.read()
-    return json.loads(data.decode("utf-8"))
-
-
-@app.route('/api/upload', methods=['GET'])
-def upload_img():
-    import io
-    menucol = connectdb('menu')
-    data = menucol.find().skip(1109)
-    j = 1;
-    for i in data:
-        conn = http.client.HTTPSConnection("api.sirv.com")
-        payload = Image.open(requests.get(i['image'], stream=True).raw)
-        img_byte_arr = io.BytesIO()
-        rgb_im = payload.convert('RGB')
-        rgb_im.save(img_byte_arr, format='JPEG')
-        img_byte_arr = img_byte_arr.getvalue()
-        if( j % 100 == 0 or j == 1 ):
-            token = get_token()
-        headers = {
-            'content-type': "application/json",
-            'authorization': "Bearer "+token['token']
-        }
-        conn.request("POST", "/v2/files/upload?filename=%2Ffood_image%2Ffood_img_"+str(i['_id'])+".jpg", img_byte_arr, headers)
-        res = conn.getresponse()
-        data = res.read()
-        j += 1
-    return 'finish'
-
-if __name__ == '__main__':
-    app.debug = True
-    app.run()  
-    
