@@ -86,13 +86,12 @@ $total_ing = 1;
                             <li class="breadcrumb-item active">Add Food</li>
                         </ol>
                     </div>
-                    <div class="col-md-7 align-self-center" >
+                    <!--<div class="col-md-7 align-self-center" >
                         <div id="excel_filter" class="btn waves-effect waves-light btn btn-info pull-right hidden-sm-down">Excel File <i class="fa fa-plus-circle" aria-hidden="true"></i></div>
                         <div id="normal_filter" class="btn waves-effect waves-light btn btn-info pull-right hidden-sm-down" style="display: none;">Add Menu <i class="fa fa-plus-circle" aria-hidden="true"></i></div>
-                    </div>
+                    </div>-->
                 </div>
                 <div class="row" id="excel_add" style="display: none;">
-                        <!-- Upload image -->
                         <div class="col-lg-12 col-xlg-12 col-md-12" >
                             <div class="card">
                                 <form action="http://127.0.0.1:5000/api/add-excel?username=cheasel&api_key=fe1913c8bddda7fbf1b050c92949ef887c97369bb965bc866bcbc9c15d65154e" method="post" enctype="multipart/form-data">
@@ -108,29 +107,6 @@ $total_ing = 1;
                                         </button>
                                     </label>
                                     <input id="excel_filename" name="excel_filename" type="file" accept=".xlsx,.xlsm,.xlsb,.xltx,.xltm,.xls,.xlt,.xla,.xlw" style="display: none;" />
-                                    <!--<div class="card-body col-md-5">
-                                        <form action="http://127.0.0.1:5000/api/add-excel?username=cheasel&api_key=fe1913c8bddda7fbf1b050c92949ef887c97369bb965bc866bcbc9c15d65154e" method="post" enctype="multipart/form-data">
-                                            <label class="form-label" for="customFile">Default file input example</label>
-                                            <input type="file" class="form-control" id="customFile" />
-                                            <div class="file-field">
-                                                <div class="btn btn-primary btn-sm float-left waves-effect waves-light">
-                                                    <span>Choose file</span>
-                                                    <input type="file">
-                                                </div>
-                                                <div class="file-path-wrapper">
-                                                    <input class="file-path validate" type="text" placeholder="Upload your file">
-                                                </div>
-                                            </div>
-                                            <input class="btn btn-block btn-success mt-3 col-md-6" type="submit" value="Upload File" name="submit">
-                                        </form>-->
-                                        <!--<label for="news_filename">
-                                            <img src="../img/Fried-rice.jpg" id="blah" alt="your image" class="img-circle" width="250" height="250" />
-                                            <div class="btn btn-block btn-success mt-3">Upload image. <i class="fas fa-upload" aria-hidden="true"></i></div>
-                                        </label>
-                                        <input id="news_filename" name="news_filename" type="file" style="display: none;" />
-                                        <h4 class="card-title m-t-10">Image</h4>
-                                        <h6 class="card-subtitle">After uploading images, please click "ADD FOOD" below</h6>
-                                    </div>-->
                                 </center>
                                 </form>
                             </div>

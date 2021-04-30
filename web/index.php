@@ -239,13 +239,13 @@
                     <div class="col-1">
                     </div>
                     <div class="col-5">
-                        <input type="text" name="min-cal" placeholder="0" value="0" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="min-cal" placeholder="0"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                     <div class="col-1">
                         <i class="fa fa-minus" style="width: 40px; font-size: 10px; padding-left: auto;" aria-hidden="true"></i>
                     </div>
                     <div class="col-5">
-                        <input type="text" name="max-cal" placeholder="9999" value="9999" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="max-cal" placeholder="9999"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                 </div>
                 <div class="row col-6">
@@ -253,13 +253,13 @@
                     <div class="col-1">
                     </div>
                     <div class="col-5">
-                        <input type="text" name="min-chol" placeholder="0" value="0" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="min-chol" placeholder="0"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                     <div class="col-1">
                         <i class="fa fa-minus" style="width: 40px; font-size: 10px; padding-left: auto;" aria-hidden="true"></i>
                     </div>
                     <div class="col-5">
-                        <input type="text" name="max-chol" placeholder="9999" value="9999" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="max-chol" placeholder="9999"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                 </div>
                 <div class="row col-6">
@@ -267,13 +267,13 @@
                     <div class="col-1">
                     </div>
                     <div class="col-5">
-                        <input type="text" name="min-carb" placeholder="0" value="0" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="min-carb" placeholder="0"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                     <div class="col-1">
                         <i class="fa fa-minus" style="width: 40px; font-size: 10px; padding-left: auto;" aria-hidden="true"></i>
                     </div>
                     <div class="col-5">
-                        <input type="text" name="max-carb" placeholder="9999" value="9999" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="max-carb" placeholder="9999"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                 </div>
                 <div class="row col-6" style="margin-top: 5px;">
@@ -281,13 +281,13 @@
                     <div class="col-1">
                     </div>
                     <div class="col-5">
-                        <input type="text" name="min-protein" placeholder="0" value="0" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="min-protein" placeholder="0"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                     <div class="col-1">
                         <i class="fa fa-minus" style="width: 40px; font-size: 10px; padding-left: auto;" aria-hidden="true"></i>
                     </div>
                     <div class="col-5">
-                        <input type="text" name="max-protein" placeholder="9999" value="9999" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="max-protein" placeholder="9999"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                 </div>
                 <div class="row col-6" style="margin-top: 5px; margin-bottom: 15px;">
@@ -295,13 +295,13 @@
                     <div class="col-1">
                     </div>
                     <div class="col-5">
-                        <input type="text" name="min-fat" placeholder="0" value="0" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="min-fat" placeholder="0"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                     <div class="col-1">
                         <i class="fa fa-minus" style="width: 40px; font-size: 10px; padding-left: auto;" aria-hidden="true"></i>
                     </div>
                     <div class="col-5">
-                        <input type="text" name="max-fat" placeholder="9999" value="9999" class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
+                        <input type="text" name="max-fat" placeholder="9999"  class="form-control form-control-line" style="min-height: 20px; font-size: 14px;">
                     </div>
                 </div>
                 <label class="col-12" style="padding-left:28px;">Ingredients</label>
@@ -328,24 +328,27 @@
             </div>    
         </div>
     </form>   
-    <section class="container">
-        <div class='show-menu-title'>
+    <section class="container" style="min-height: 350px;">
+        <div class='show-menu-title' >
             <?php
                 if( $search != "" ){
                     echo '<h4 style="text-align: center;"> ค้นหา เมนู'. $search .'</h4>';
-                }else{
+                }else if( count(json_decode($resultmenu)) == 0 ){
+                    echo '<h4 style="text-align: center;"> ไม่พบข้อมูลอาหาร </h4>';
+                }
+                else{
                     echo '<h4 style="text-align: center;"> เมนูอาหารทั้งหมด </h4>';
                 }
             ?>
         </div>
-        <div id="table-body" class="show-menu">
-        
+        <div id="table-body" class="show-menu" style="min-height: 300px;">
+            
         </div>
-        <center><div id="pagination-wrapper"></div></center>
+        <center><div id="pagination-wrapper" style="margin-bottom: 30px;"></div></center>
     </section>
 
     <!-- Footer -->
-    <?php include("function/footer.php"); ?>
+    <?php #include("function/footer.php"); ?>
     <?php //include 'cache/bottom-cache.php'; ?>
     
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous" ></script>
@@ -405,7 +408,7 @@
     </script>
 
     <script>
-        var tableData = <?php print $resultmenu ?>;
+        var tableData = <?php print $resultmenu ?>
         //console.log(tableData)
 
         /*
@@ -492,7 +495,7 @@
 
             var data = pagination(state.querySet, state.page, state.rows)
             var myList = data.querySet
-            //console.log(tableData)
+            //console.log(myList)
             for (var i = 1 in myList) {
                 //Keep in mind we are using "Template Litterals to create rows"
                 //var date = new Date((myList[i].date_add.$date));
@@ -518,8 +521,10 @@
                         `
                 table.append(row)
             }
-
-            pageButtons(data.pages)
+            if ( myList.length != 0){
+                pageButtons(data.pages)
+            }
+            
         }
     </script>
 

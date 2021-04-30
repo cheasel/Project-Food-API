@@ -70,7 +70,7 @@
     <!-- Masthead -->
     <?php #include("function/search.php"); ?>
 
-    <section class="container" >
+    <section style="margin: 0px auto 0px auto; width: 90%">
         <div class="row">
             <div class="col-8">
                 <div class="card" style="margin-top: 20px; box-shadow: 0 4px 5px rgba(0, 0, 0, 0.6); min-height: 670px">
@@ -89,11 +89,11 @@
                                         <h4 style="font-size: 18px; font-weight: bold;" class="card-title "><br>คุณค่าอาหาร</h4>
                                     </center>
                                     <div id="nutrition" style="height:260px; width:100%;"></div>
-                                    <ul class="list-inline m-t-30 ml-4 font-12">
-                                        <li><i class="fa fa-circle" style="color: #f7c672;"></i> คาร์โบไฮเดรต</li>
-                                        <li><i class="fa fa-circle" style="color: #2580e8;"></i> คอเลสเตอรอล</li>
-                                        <li><i class="fa fa-circle" style="color: #ed3c28;"></i> ไขมัน</li>
-                                        <li><i class="fa fa-circle" style="color: #4be026;"></i> โปรตีน</li>
+                                    <ul class="list-inline m-t-30 ml-2 font-12">
+                                        <li><i class="fa fa-circle" style="color: #f7c672;"></i> คาร์โบไฮเดรต&nbsp&nbsp&nbsp <?php echo round($resultmenu[0]["nutrition"]["carbohydrates"]["quantity"], 2).' ( g )' ?></li>
+                                        <li><i class="fa fa-circle" style="color: #2580e8;"></i> คอเลสเตอรอล&nbsp&nbsp <?php echo round($resultmenu[0]["nutrition"]["cholesterol"]["quantity"],2).' ( mg )' ?></li>
+                                        <li><i class="fa fa-circle" style="color: #ed3c28;"></i> ไขมัน&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <?php echo round($resultmenu[0]["nutrition"]["fat"]["quantity"],2).' ( g )' ?></li>
+                                        <li><i class="fa fa-circle" style="color: #4be026;"></i> โปรตีน&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <?php echo round($resultmenu[0]["nutrition"]["protein"]["quantity"],2).' ( g )' ?></li>
                                     </ul>
                                 </div>
                                 <!-- <div class="card mt-2" style="box-shadow: 0 4px 5px rgba(0, 0, 0, 0.6);">

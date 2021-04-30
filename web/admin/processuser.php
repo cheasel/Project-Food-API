@@ -85,9 +85,9 @@ if(isset($_GET['search'])){
                             <li class="breadcrumb-item active">User</li>
                         </ol>
                     </div>
-                    <div class="col-md-7 align-self-center">
+                    <!--<div class="col-md-7 align-self-center">
                         <a href="add-user.php" class="btn waves-effect waves-light btn btn-info pull-right hidden-sm-down">Add User <i class="fa fa-plus-circle" aria-hidden="true"></i></a>
-                    </div>
+                    </div>-->
                 </div>
                 <div class="row">
                     <!-- column -->
