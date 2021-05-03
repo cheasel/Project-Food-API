@@ -1,7 +1,3 @@
-<p align="center">
-  <img width="65" src="https://github.com/favicon.ico">
-</p>
-
 
 ## เครื่องมือที่ใช้ในการพัฒนา
 - python
@@ -28,11 +24,14 @@
 
 ## ภาพและข้อมูลของชิ้นงาน
 
-- [รูปภาพเว็บไซต์](https://drive.google.com/file/d/1gcWZixTnBeOSMyMdyn-TkqXe9WUu7PXh/view?usp=sharing)
+- รูปภาพเว็บไซต์
+    ![food_webpage](https://user-images.githubusercontent.com/25501898/116842365-87058800-ac06-11eb-82bc-96acf9a0625a.jpg)
 - ข้อมูล api
   - api สำหรับค้นหารายการอาหาร
     -  [ลิ้งข้อมูล](http://foodapi.icu/api-doc.php?page=1)
-    -  [รูปภาพ](https://drive.google.com/file/d/1YidDq1Q3okYABqjr2HBlAnPZLaE1xxUL/view?usp=sharing)
-  - [api สำหรับค้นหาด้วยคุณค่าทางอาหาร]
+    -  รูปภาพ
+        ![api1](https://user-images.githubusercontent.com/25501898/116842127-b7005b80-ac05-11eb-9482-9fdf2d9b34b7.png)
+  - api สำหรับค้นหาด้วยคุณค่าทางอาหาร
     -  [ลิ้งข้อมูล](http://foodapi.icu/api-doc.php?page=2)
-    -  [รูปภาพ](https://drive.google.com/file/d/1Bc4F9w27mrWAB7AvgKGhgKrnUHYcg8Ia/view?usp=sharing)
+    -  รูปภาพ
+        ![api2](https://user-images.githubusercontent.com/25501898/116842225-06df2280-ac06-11eb-8372-a18ad8585758.png)
