@@ -24,14 +24,14 @@
 
 ## ภาพและข้อมูลของชิ้นงาน
 
-- รูปภาพเว็บไซต์
-    ![food_webpage](https://user-images.githubusercontent.com/25501898/116842365-87058800-ac06-11eb-82bc-96acf9a0625a.jpg)
+- รูปภาพเว็บไซต์\
+    <img src="https://user-images.githubusercontent.com/25501898/116842365-87058800-ac06-11eb-82bc-96acf9a0625a.jpg" width="650">
 - ข้อมูล api
   - api สำหรับค้นหารายการอาหาร
     -  [ลิ้งข้อมูล](http://foodapi.icu/api-doc.php?page=1)
-    -  รูปภาพ
-        ![api1](https://user-images.githubusercontent.com/25501898/116842127-b7005b80-ac05-11eb-9482-9fdf2d9b34b7.png)
+    -  รูปภาพ\
+        <img src="https://user-images.githubusercontent.com/25501898/116842127-b7005b80-ac05-11eb-9482-9fdf2d9b34b7.png" width="750">
   - api สำหรับค้นหาด้วยคุณค่าทางอาหาร
     -  [ลิ้งข้อมูล](http://foodapi.icu/api-doc.php?page=2)
-    -  รูปภาพ
-        ![api2](https://user-images.githubusercontent.com/25501898/116842225-06df2280-ac06-11eb-8372-a18ad8585758.png)
+    -  รูปภาพ\
+        <img src="https://user-images.githubusercontent.com/25501898/116842225-06df2280-ac06-11eb-8372-a18ad8585758.png" width="750">
