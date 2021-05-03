@@ -1,6 +1,7 @@
 <p align="center">
-  <img width="46" src="https://github.com/favicon.ico">
+  <img width="65" src="https://github.com/favicon.ico">
 </p>
+
 
 ## เครื่องมือที่ใช้ในการพัฒนา
 - python
